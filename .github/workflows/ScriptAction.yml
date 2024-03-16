@@ -1,4 +1,4 @@
-name: Run Xunit Tests with Cosmos DB Emulator
+name: .NET Core xUnit Tests
 
 on: [push, pull_request]
 
@@ -7,25 +7,18 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+    - uses: actions/checkout@v2
+      
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '6.0.x' # Change this to the desired .NET Core version
 
-    - name: Download Azure Cosmos DB Emulator
-      run: |
-        Invoke-WebRequest -Uri "https://aka.ms/cosmosdb-emulator" -OutFile "cosmosdbemulator.msi"
+    - name: Restore dependencies
+      run: dotnet restore
 
-    - name: Install Azure Cosmos DB Emulator
-      run: |
-        Start-Process -Wait -FilePath "cosmosdbemulator.msi" -ArgumentList "/quiet"
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
 
-    - name: Start Cosmos DB Emulator
-      run: |
-        Start-Process -Wait -FilePath "C:\\Program Files\\Azure Cosmos DB Emulator\\CosmosDB.Emulator.exe" -ArgumentList "/EnableTableEndpoint"
-
-    - name: Wait for Cosmos DB Emulator to start
-      run: Start-Sleep -s 30
-
-    - name: Build and Test
-      run: |
-        dotnet build
-        dotnet test --filter FullyQualifiedName~Namespace.TestClassName
+    - name: Test
+      run: dotnet test --configuration Release --no-build --verbosity normal
