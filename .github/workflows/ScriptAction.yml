@@ -4,7 +4,7 @@ on: [push, pull_request]
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
     - name: Checkout repository
@@ -13,15 +13,18 @@ jobs:
     - name: Install Azure Cosmos DB Emulator
       run: |
         wget https://aka.ms/cosmosdb-emulator -O cosmosdbemulator.msi
-        sudo apt-get update
-        sudo apt-get install -y wine
-        wine msiexec /i cosmosdbemulator.msi /q
+        Start-Process -Wait -FilePath "cosmosdbemulator.msi" -ArgumentList "/quiet"
 
     - name: Start Cosmos DB Emulator
-      run: wine "C:\\Program Files\\Azure Cosmos DB Emulator\\CosmosDB.Emulator.exe" /EnableTableEndpoint
+      run: |
+        Start-Process -FilePath "C:\\Program Files\\Azure Cosmos DB Emulator\\CosmosDB.Emulator.exe" -ArgumentList "/EnableTableEndpoint" -Wait
+
 
     - name: Wait for Cosmos DB Emulator to start
-      run: sleep 30
+      run: Start-Sleep -s 30
 
-
+    - name: Build and Test
+      run: |
+        dotnet build
+        dotnet test --filter FullyQualifiedName~Namespace.TestClassName
 
