@@ -13,16 +13,16 @@ jobs:
     name: Build and Test
     runs-on: ubuntu-latest
 
-    services:
-      cosmosdb-emulator:
-        image: mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator
-        ports:
-          - 8081:8081
-        options: --name cosmosdb-emulator --health-cmd "curl --silent --fail localhost:8081/_explorer/emulator/status" --health-interval 10s --health-timeout 5s --health-retries 5
-
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
+
+    - name: Download and Install Cosmos DB Emulator
+      run: |
+        wget https://aka.ms/cosmosdb-emulator -O cosmosdb-emulator.tar.gz
+        tar -xvf cosmosdb-emulator.tar.gz
+        sudo dpkg -i cosmosdb-emulator/*.deb
+        sudo service cosmosdb-emulator start
 
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
