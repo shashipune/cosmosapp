@@ -17,20 +17,11 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Download Cosmos DB Emulator
-      run: wget https://aka.ms/cosmosdb-emulator -O cosmosdb-emulator.tar.gz
-
-    - name: List files in current directory
-      run: ls -l
-
-    - name: Extract Cosmos DB Emulator
-      run: tar -xvf cosmosdb-emulator.tar.gz
-
-    - name: List files in extracted directory
-      run: ls -l cosmosdb-emulator
-
-    - name: Install Cosmos DB Emulator
-      run: sudo dpkg -i cosmosdb-emulator/*.deb
+    - name: Download and Install Cosmos DB Emulator
+      run: |
+        wget https://aka.ms/cosmosdb-emulator-script -O install-cosmosdb-emulator.sh
+        chmod +x install-cosmosdb-emulator.sh
+        sudo ./install-cosmosdb-emulator.sh
 
     - name: Start Cosmos DB Emulator
       run: sudo service cosmosdb-emulator start
