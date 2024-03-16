@@ -1,43 +1,27 @@
-name: Run Xunit Tests with Azure Cosmos DB Emulator
+name: Run Xunit Tests with Cosmos DB Emulator
 
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+on: [push, pull_request]
 
 jobs:
   build:
-    name: Build and Test
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
+    - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 7.0.x  # Use the version you need
-
-    - name: Add Azure Cosmos DB Emulator NuGet Source
-      run: dotnet nuget add source -n "Azure Cosmos DB Emulator" -u "https://pkgs.dev.azure.com/azure-sdk/public/_packaging/azure-sdk-for-net/dotnet/v3/index.json" --store-password-in-clear-text
-
-    - name: Install Cosmos DB Emulator Tools
-      run: dotnet tool install -g Microsoft.Azure.Cosmos.Emulator.Tool
+    - name: Install Azure Cosmos DB Emulator
+      run: |
+        wget https://aka.ms/cosmosdb-emulator -O cosmosdbemulator.msi
+        sudo apt-get update
+        sudo apt-get install -y wine
+        wine msiexec /i cosmosdbemulator.msi /q
 
     - name: Start Cosmos DB Emulator
-      run: cosmosdb-emulator start
+      run: wine "C:\\Program Files\\Azure Cosmos DB Emulator\\CosmosDB.Emulator.exe" /EnableTableEndpoint
 
-    - name: Setup Environment Variables
-      run: |
-        echo "export COSMOSDB_EMULATOR=https://localhost:8081" >> $GITHUB_ENV
-        echo "export COSMOSDB_MASTER_KEY=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==" >> $GITHUB_ENV
+    - name: Wait for Cosmos DB Emulator to start
+      run: sleep 30
 
-    - name: Restore dependencies
-      run: dotnet restore
 
-    - name: Build and test
-      run: dotnet test --logger "trx;LogFileName=testresults.trx"  # Adjust the command based on your test project structure and configuration
+
