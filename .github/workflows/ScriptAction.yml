@@ -22,7 +22,10 @@ jobs:
       with:
         dotnet-version: 7.0.x  # Use the version you need
 
-    - name: Download and Install Cosmos DB Emulator Tools
+    - name: Add Azure Cosmos DB Emulator NuGet Source
+      run: dotnet nuget add source -n "Azure Cosmos DB Emulator" -u "https://pkgs.dev.azure.com/azure-sdk/public/_packaging/azure-sdk-for-net/dotnet/v3/index.json" --store-password-in-clear-text
+
+    - name: Install Cosmos DB Emulator Tools
       run: dotnet tool install -g Microsoft.Azure.Cosmos.Emulator.Tool
 
     - name: Start Cosmos DB Emulator
