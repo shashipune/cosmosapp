@@ -17,19 +17,21 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Download and Install Cosmos DB Emulator
-      run: |
-        wget https://aka.ms/cosmosdb-emulator-script -O install-cosmosdb-emulator.sh
-        chmod +x install-cosmosdb-emulator.sh
-        sudo ./install-cosmosdb-emulator.sh
-
-    - name: Start Cosmos DB Emulator
-      run: sudo service cosmosdb-emulator start
-
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 7.0.x  # Use the version you need
+
+    - name: Download and Install Cosmos DB Emulator Tools
+      run: dotnet tool install -g Microsoft.Azure.Cosmos.Emulator.Tool
+
+    - name: Start Cosmos DB Emulator
+      run: cosmosdb-emulator start
+
+    - name: Setup Environment Variables
+      run: |
+        echo "export COSMOSDB_EMULATOR=https://localhost:8081" >> $GITHUB_ENV
+        echo "export COSMOSDB_MASTER_KEY=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==" >> $GITHUB_ENV
 
     - name: Restore dependencies
       run: dotnet restore
