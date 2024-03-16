@@ -8,6 +8,13 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+
+    - name: Start Cosmos DB Emulator
+      uses: southpolesteve/cosmos-emulator-github-action@v1
+      with:
+        emulator-version: 'latest'
+        start: true
+        wait: true
       
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
