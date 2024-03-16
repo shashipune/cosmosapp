@@ -17,12 +17,23 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Download and Install Cosmos DB Emulator
-      run: |
-        wget https://aka.ms/cosmosdb-emulator -O cosmosdb-emulator.tar.gz
-        tar -xvf cosmosdb-emulator.tar.gz
-        sudo dpkg -i cosmosdb-emulator/*.deb
-        sudo service cosmosdb-emulator start
+    - name: Download Cosmos DB Emulator
+      run: wget https://aka.ms/cosmosdb-emulator -O cosmosdb-emulator.tar.gz
+
+    - name: List files in current directory
+      run: ls -l
+
+    - name: Extract Cosmos DB Emulator
+      run: tar -xvf cosmosdb-emulator.tar.gz
+
+    - name: List files in extracted directory
+      run: ls -l cosmosdb-emulator
+
+    - name: Install Cosmos DB Emulator
+      run: sudo dpkg -i cosmosdb-emulator/*.deb
+
+    - name: Start Cosmos DB Emulator
+      run: sudo service cosmosdb-emulator start
 
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
