@@ -1,28 +1,37 @@
-name: Python Script Action
+name: Run Xunit Tests with Azure Cosmos DB Emulator
 
 on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
-  run_python_script:
-    name: Run Python Script
+  build:
+    name: Build and Test
     runs-on: ubuntu-latest
+
+    services:
+      cosmosdb-emulator:
+        image: mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator
+        ports:
+          - 8081:8081
+          - 8900:8900
+        options: --name cosmosdb-emulator --health-cmd "curl --silent --fail localhost:8081/_explorer/emulator/status" --health-interval 10s --health-timeout 5s --health-retries 5
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
       with:
-        python-version: '3.x'  # Use the Python version you need, like 3.6, 3.7, etc.
+        dotnet-version: 7.0.x  # Use the version you need
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt  # If you have any requirements for your script
+    - name: Restore dependencies
+      run: dotnet restore
 
-    - name: Run Python script
-      run: python path/to/your_script.py  # Replace "path/to/your_script.py" with the actual path to your script
+    - name: Build and test
+      run: dotnet test --logger "trx;LogFileName=testresults.trx"  # Adjust the command based on your test project structure and configuration
