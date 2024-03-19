@@ -22,7 +22,7 @@ jobs:
         run: sudo dpkg --add-architecture i386 && sudo apt update && sudo apt install wine64 wine32
 
       - name: Download Azure Cosmos DB Emulator installer
-        run: wget -q https://cosmosnotebooksdata.blob.core.windows.net/notebookdata/Emulator/azure-cosmos-db-emulator_2.8.1.0_amd64.deb
+        run: wget -q https://aka.ms/cosmosdb-emulator
 
       - name: Install Azure Cosmos DB Emulator
         run: wine msiexec /i azure-cosmos-db-emulator_2.8.1.0_amd64.deb
