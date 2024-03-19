@@ -1,0 +1,31 @@
+name: Install Azure Cosmos DB Emulator using Wine
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Install Wine
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14.x'
+
+      - name: Install Wine
+        run: sudo dpkg --add-architecture i386 && sudo apt update && sudo apt install wine64 wine32
+
+      - name: Download Azure Cosmos DB Emulator installer
+        run: wget -q https://cosmosnotebooksdata.blob.core.windows.net/notebookdata/Emulator/azure-cosmos-db-emulator_2.8.1.0_amd64.deb
+
+      - name: Install Azure Cosmos DB Emulator
+        run: wine msiexec /i azure-cosmos-db-emulator_2.8.1.0_amd64.deb
+
+      - name: Run Cosmos DB Emulator
+        run: wine start CosmosDB.Emulator.exe
