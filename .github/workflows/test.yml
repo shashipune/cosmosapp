@@ -19,13 +19,22 @@ jobs:
           node-version: '14.x'
 
       - name: Install Wine
-        run: sudo dpkg --add-architecture i386 && sudo apt update && sudo apt install wine64 wine32
+        run: |
+          sudo dpkg --add-architecture i386
+          sudo apt update
+          sudo apt install wine64 wine32
 
       - name: Download Azure Cosmos DB Emulator installer
-        run: wget -q https://aka.ms/cosmosdb-emulator
+        run: wget -q https://aka.ms/cosmosdb-emulator -O cosmosdb-emulator.exe
 
       - name: Install Azure Cosmos DB Emulator
-        run: wine msiexec /i azure-cosmos-db-emulator_2.8.1.0_amd64.deb
+        run: wine cosmosdb-emulator.exe /quiet
 
       - name: Run Cosmos DB Emulator
         run: wine start CosmosDB.Emulator.exe
+
+      - name: Install Wine Gecko
+        run: wineboot --init && sleep 10 && wineserver -w
+
+      - name: Run Cosmos DB Emulator (Headless)
+        run: wine CosmosDB.Emulator.exe /headless
